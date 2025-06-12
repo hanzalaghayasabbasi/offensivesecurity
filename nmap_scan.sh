@@ -15,7 +15,9 @@ fi
 
 target_ip="$1"
 
-# Create folder structure if not exists
+# Folder structure for saving scan results
+# TCP scans saved in:  nmap_scan/tcp/
+# UDP scans saved in:  nmap_scan/udp/
 mkdir -p nmap_scan/tcp
 mkdir -p nmap_scan/udp
 
