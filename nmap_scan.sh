@@ -9,7 +9,7 @@
 set -e
 
 if [ -z "$1" ]; then
-    echo "Usage: $0 <target_ip>"
+    echo "Usage: sudo $0 <target_ip>"
     exit 1
 fi
 
