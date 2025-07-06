@@ -21,20 +21,55 @@ mkdir -p "$machine_name/other_scans"
 
 echo "✅ Default directory structure created under '$machine_name'."
 
-# Clone GitHub repository into the machine directory
+# Clone GitHub repo into a temp directory
 repo_url="https://github.com/hanzalaghayasabbasi/offensivesecurity.git"
-repo_target="$machine_name/offensivesecurity"
+tmp_dir=$(mktemp -d)
 
-if [ -d "$repo_target" ]; then
-  echo "⚠️ Repository already exists at '$repo_target'. Skipping clone."
+echo "📥 Cloning repository to temporary location..."
+git clone "$repo_url" "$tmp_dir"
+
+if [ $? -eq 0 ]; then
+  echo "✅ Clone successful. Transferring files..."
+
+  # Remove unwanted files
+  rm -f "$tmp_dir/README.md"
+  rm -rf "$tmp_dir/.git"
+
+  # Move files/folders to machine directory
+  shopt -s dotglob  # include hidden files
+  mv "$tmp_dir"/* "$machine_name/"
+  rm -rf "$tmp_dir"
+
+  echo "🔄 Renaming cloned script files..."
+
+  # Rename only the cloned files in the machine directory that are scripts
+  find "$machine_name" -maxdepth 1 -type f \( -iname "*.sh" -o -iname "*.py" -o -iname "*.pl" -o -iname "*.rb" \) | while read -r file; do
+    dir=$(dirname "$file")
+    base=$(basename "$file")
+    new_name="$dir/script_$base"
+    mv "$file" "$new_name"
+    chmod +x "$new_name"
+    echo "  📄 Renamed: $base → script_$base"
+  done
+
+  echo "📁 Renaming folders (only if they contain scripts)..."
+
+  # Rename only top-level folders (from clone) that contain scripts
+  find "$machine_name" -mindepth 1 -maxdepth 1 -type d | while read -r folder; do
+    if find "$folder" -type f \( -iname "*.sh" -o -iname "*.py" -o -iname "*.pl" -o -iname "*.rb" \) | grep -q .; then
+      base_folder=$(basename "$folder")
+      parent_folder=$(dirname "$folder")
+      new_folder="$parent_folder/script_$base_folder"
+      if [ "$folder" != "$new_folder" ]; then
+        mv "$folder" "$new_folder"
+        echo "  📂 Renamed: $base_folder → script_$base_folder"
+      fi
+    fi
+  done
+
 else
-  echo "📥 Cloning offensive security repo into '$repo_target'..."
-  git clone "$repo_url" "$repo_target"
-  if [ $? -eq 0 ]; then
-    echo "✅ Repository cloned successfully."
-  else
-    echo "❌ Failed to clone repository."
-  fi
+  echo "❌ Failed to clone repository."
+  rm -rf "$tmp_dir"
 fi
 
 # Ask if user wants to create additional folders
