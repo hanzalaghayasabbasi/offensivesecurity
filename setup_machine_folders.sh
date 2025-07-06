@@ -21,6 +21,22 @@ mkdir -p "$machine_name/other_scans"
 
 echo "✅ Default directory structure created under '$machine_name'."
 
+# Clone GitHub repository into the machine directory
+repo_url="https://github.com/hanzalaghayasabbasi/offensivesecurity.git"
+repo_target="$machine_name/offensivesecurity"
+
+if [ -d "$repo_target" ]; then
+  echo "⚠️ Repository already exists at '$repo_target'. Skipping clone."
+else
+  echo "📥 Cloning offensive security repo into '$repo_target'..."
+  git clone "$repo_url" "$repo_target"
+  if [ $? -eq 0 ]; then
+    echo "✅ Repository cloned successfully."
+  else
+    echo "❌ Failed to clone repository."
+  fi
+fi
+
 # Ask if user wants to create additional folders
 read -p "Do you want to create any additional folders inside '$machine_name'? (yes/no): " create_more
 
@@ -62,4 +78,3 @@ else
 fi
 
 echo "✅ Setup complete."
-
