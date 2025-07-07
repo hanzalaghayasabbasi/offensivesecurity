@@ -11,17 +11,15 @@ echo -e "==============================================${NC}\n"
 
 # Ask for protocol
 echo -e "${YELLOW}Choose protocol:${NC}"
-echo "1) mssql"
-echo "2) smb"
-echo "3) ftp"
-echo "4) ldap"
-echo "5) nfs"
-echo "6) rdp"
-echo "7) ssh"
-echo "8) vnc"
-echo "9) winrm"
-echo "10) wmi"
-read -p "Enter protocol name (e.g., smb): " protocol
+echo -e " mssql     smb"
+echo -e " ftp       ldap"
+echo -e " nfs       rdp"
+echo -e " ssh       vnc"
+echo -e " winrm     wmi"
+echo
+
+
+read -p "Enter protocol name (e.g., mssql): " protocol
 
 # Ask for target IP
 read -p "Enter target IP address or range (e.g., 192.168.1.0/24): " ip_address
@@ -111,4 +109,3 @@ if [[ "$confirm" =~ ^[Yy]$ ]]; then
 else
     echo -e "${YELLOW}Command not executed.${NC}"
 fi
-
